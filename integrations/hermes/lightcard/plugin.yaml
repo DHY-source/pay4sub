@@ -1,0 +1,10 @@
+name: lightcard
+version: 1.2.0
+description: 私有发卡小店的订单、库存、导卡与人工确认发卡工具
+provides_tools:
+  - shop_inventory
+  - shop_orders
+  - shop_import_cards
+  - shop_deliver_order
+provides_hooks:
+  - post_gateway_admission

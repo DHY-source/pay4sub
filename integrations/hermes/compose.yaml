@@ -1,0 +1,30 @@
+name: hermes-wechat
+services:
+  gateway:
+    image: nousresearch/hermes-agent@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
+    container_name: hermes-wechat
+    command: ["gateway", "run"]
+    restart: unless-stopped
+    network_mode: host
+    mem_limit: 640m
+    memswap_limit: 1g
+    cpus: 0.75
+    pids_limit: 192
+    environment:
+      HERMES_UID: "1001"
+      HERMES_GID: "1001"
+      HERMES_HOME: /opt/data
+      HERMES_TIMEZONE: Asia/Shanghai
+      TZ: Asia/Shanghai
+      API_SERVER_ENABLED: "false"
+      HERMES_DASHBOARD: "0"
+    volumes:
+      - ./data:/opt/data
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 35s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

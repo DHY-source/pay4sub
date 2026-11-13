@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><meta name="referrer" content="no-referrer">
+  <title>自助发卡</title>
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/static/icon.svg">
+  <link rel="stylesheet" href="/static/styles.css?v=20261113-payment-amount"><script defer src="/static/common.js?v=20261114-clipboard"></script><script defer src="/static/sub2api.js?v=20261113-payment-amount"></script><script defer src="/static/store.js?v=20261113-payment-amount"></script>
+</head>
+<body>
+  <header class="site-header"><div class="header-inner"><a class="brand" href="/" id="brand-name">自助发卡</a><button id="open-lookup" type="button" class="button secondary">查订单</button></div></header>
+  <main class="shell store-shell">
+    <section id="sub2api-context" class="notice" hidden><span id="sub2api-message" role="status"></span><div class="row-actions"><button id="my-orders" class="button secondary tiny" type="button" hidden>我的订单</button><button id="sub2api-guest" class="button text-button tiny" type="button">改为普通购买</button></div></section>
+    <div id="shop-notice" class="notice" hidden></div>
+    <div id="store-message" role="status" aria-live="polite" hidden></div>
+    <div class="section-heading"><h1>商品</h1><button id="continue-order" class="button text-button" type="button" hidden>查看订单</button></div>
+    <div id="products" class="products" aria-live="polite"><div class="empty-state">加载中…</div></div>
+  </main>
+  <dialog id="checkout-dialog" class="modal checkout-dialog" aria-labelledby="checkout-title">
+    <div class="section-heading"><h2 id="checkout-title">购买</h2><button id="close-checkout" type="button" class="close-button" aria-label="关闭">×</button></div>
+    <section id="checkout-view">
+      <h3 id="selected-name"></h3>
+      <p id="purchase-redemption" class="notice" hidden></p>
+      <form id="checkout-form">
+        <div class="quantity-field"><label for="buy-quantity">数量</label><div class="quantity-control"><button id="quantity-decrease" class="button secondary" type="button" aria-label="减少数量">−</button><input id="buy-quantity" name="quantity" type="number" min="1" max="100" step="1" value="1" required inputmode="numeric"><button id="quantity-increase" class="button secondary" type="button" aria-label="增加数量">+</button></div><div id="quantity-message" role="status" hidden></div></div>
+        <div class="price-line"><span id="selected-unit-price" class="muted small"></span><span>合计 <strong id="selected-price"></strong></span></div>
+        <p class="small muted">同金额订单较多时，应付金额可能增加 0.01–0.10 元，请以下单后显示的应付金额为准。</p>
+        <label>联系方式<input id="buyer-contact" name="contact" required minlength="3" maxlength="128" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="QQ、手机号或邮箱"></label>
+        <fieldset><legend>支付方式</legend><div id="channels" class="channel-options"></div></fieldset>
+        <div id="checkout-message" role="status" aria-live="polite" hidden></div>
+        <button id="create-order" class="button primary full" type="submit">去付款</button>
+      </form>
+    </section>
+    <section id="order-view" hidden>
+      <div class="section-heading compact"><h3 id="order-product"></h3><span id="order-status"></span></div>
+      <p id="order-channel" class="small muted"></p>
+      <div class="payment-amount"><span>应付金额（请按此金额付款）</span><strong id="pay-amount"></strong></div>
+      <p id="payment-breakdown" class="payment-note"></p>
+      <p id="order-contact" class="small muted break-all"></p>
+      <div id="payment-box">
+        <button id="enlarge-payment-qr" class="qr-enlarge" type="button" data-qr-preview="checkout" aria-label="放大收款二维码" aria-haspopup="dialog"><img id="payment-qr" class="qr-image" alt="收款二维码"><span class="qr-enlarge-hint">点击放大</span></button>
+        <p class="payment-note">请按应付金额付款，勿抹零；备注填写联系方式，付款后等待发卡</p>
+        <p id="countdown" class="small muted" role="timer"></p>
+      </div>
+      <div id="order-redemption"></div>
+      <div id="delivered-box" hidden><pre id="card-code" class="card-code"></pre><button id="copy-card" class="button primary full" type="button">复制卡密</button></div>
+      <p id="closed-order-message" class="notice warning" hidden></p>
+      <div id="order-message" role="status" aria-live="polite" hidden></div>
+      <div class="modal-actions"><button id="cancel-order" class="button text-button" type="button">取消未付款订单</button><button id="refresh-order" class="button secondary" type="button">刷新</button></div>
+      <p class="small muted break-all">订单号 <span id="order-id" class="mono"></span></p>
+    </section>
+  </dialog>
+  <dialog id="lookup-dialog" class="modal lookup-dialog" aria-labelledby="lookup-title">
+    <div class="section-heading"><h2 id="lookup-title">查订单</h2><button id="close-lookup" class="close-button" type="button" aria-label="关闭">×</button></div>
+    <form id="lookup-form" class="lookup-form"><label>联系方式<input id="lookup-contact" name="contact" required minlength="3" maxlength="128" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="填写下单时的联系方式"></label><button id="lookup-submit" class="button primary" type="submit">查询</button></form>
+    <div id="lookup-message" role="status" aria-live="polite" hidden></div>
+    <div id="lookup-results" class="order-list" aria-live="polite"></div>
+    <div class="modal-actions"><button id="lookup-refresh" class="button secondary" type="button" hidden>刷新</button><button id="lookup-more" class="button secondary" type="button" hidden>加载更多</button></div>
+  </dialog>
+</body>
+</html>
+
+

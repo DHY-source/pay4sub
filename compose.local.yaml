@@ -1,0 +1,44 @@
+# Standalone local preview. Do not combine with compose.yaml.
+name: lightcard-local
+services:
+  app: &shop-service
+    build: .
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /app/data
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Run python3 scripts/setup.py --local first}
+      SECRET_KEY: ${SECRET_KEY:?Run python3 scripts/setup.py --local first}
+      SHOP_NAME: ${SHOP_NAME:-自用发卡小站}
+      ORDER_TTL_SECONDS: ${ORDER_TTL_SECONDS:-1800}
+      SECURE_COOKIES: "false"
+      TRUST_PROXY: "0"
+      SUB2API_BASE_URL: ${SUB2API_BASE_URL:-}
+      SUB2API_ENABLED: ${SUB2API_ENABLED:-0}
+      SUB2API_RELAY_CONFIRMED: ${SUB2API_RELAY_CONFIRMED:-0}
+      SUB2API_TOKEN_KEY: ${SUB2API_TOKEN_KEY:-}
+    ports:
+      - "127.0.0.1:8080:8000"
+    volumes:
+      - shop_data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  redeem-worker:
+    <<: *shop-service
+    ports: []
+    command: ["python", "scripts/redeem_worker.py"]
+    healthcheck:
+      test: ["CMD", "python", "scripts/redeem_worker.py", "--healthcheck"]
+      interval: 30s
+      timeout: 20s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  shop_data:

@@ -1,0 +1,27 @@
+{
+    admin off
+    log {
+        format filter {
+            wrap json
+            fields {
+                request>uri delete
+                request>headers delete
+                uri delete
+            }
+        }
+    }
+}
+
+{$DOMAIN} {
+    encode zstd gzip
+    request_body {
+        max_size 3MB
+    }
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        Referrer-Policy no-referrer
+        Strict-Transport-Security "max-age=15552000"
+    }
+    reverse_proxy app:8000
+}

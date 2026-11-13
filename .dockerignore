@@ -1,0 +1,15 @@
+.env
+.env.*
+.git
+.venv
+.build-tools
+.deployment
+__pycache__
+*.pyc
+data
+backups
+dist
+android
+tests
+.pytest_cache
+*.log

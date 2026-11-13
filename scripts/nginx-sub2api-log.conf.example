@@ -1,0 +1,12 @@
+# Place log_format at nginx http scope (for example in conf.d).
+# Use $uri, never $request / $request_uri / $args / $http_referer.
+log_format lightcard_private '$remote_addr [$time_local] "$request_method $uri $server_protocol" $status $body_bytes_sent $request_time';
+
+# In BOTH HTTP and HTTPS server blocks for the card shop, replace access_log:
+# access_log /var/log/nginx/lightcard-pay.access.log lightcard_private;
+#
+# Nginx error logs can include full request URLs, including failed upstream requests.
+# If a redacting log collector is unavailable, disable this site's error log:
+# error_log /dev/null;
+#
+# Do not enable request-body/header logging in nginx, WAF, CDN or APM.

@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+data/
+backups/
+dist/
+.pytest_cache/
+android/.gradle/
+android/**/build/
+android/local.properties
+*.log
+.build-tools/
+.deployment/
+android/output/

@@ -1,0 +1,67 @@
+name: lightcard
+services:
+  app: &shop-service
+    build: .
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /app/data
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Run python3 scripts/setup.py first}
+      SECRET_KEY: ${SECRET_KEY:?Run python3 scripts/setup.py first}
+      SHOP_NAME: ${SHOP_NAME:-自用发卡小站}
+      ORDER_TTL_SECONDS: ${ORDER_TTL_SECONDS:-1800}
+      SECURE_COOKIES: "true"
+      TRUST_PROXY: "1"
+      HERMES_API_TOKEN: ${HERMES_API_TOKEN:-}
+      SUB2API_BASE_URL: ${SUB2API_BASE_URL:-}
+      SUB2API_ENABLED: ${SUB2API_ENABLED:-0}
+      SUB2API_RELAY_CONFIRMED: ${SUB2API_RELAY_CONFIRMED:-0}
+      SUB2API_TOKEN_KEY: ${SUB2API_TOKEN_KEY:-}
+    volumes:
+      - shop_data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 35s
+
+  redeem-worker:
+    <<: *shop-service
+    command: ["python", "scripts/redeem_worker.py"]
+    healthcheck:
+      test: ["CMD", "python", "scripts/redeem_worker.py", "--healthcheck"]
+      interval: 30s
+      timeout: 20s
+      start_period: 30s
+      retries: 3
+
+  caddy:
+    image: caddy:2-alpine
+    platform: linux/amd64
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?Set a public domain using scripts/setup.py}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  shop_data:
+  caddy_data:
+  caddy_config:

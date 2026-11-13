@@ -1,0 +1,7 @@
+name: lightcard-pay
+services:
+  app:
+    ports:
+      - "127.0.0.1:18080:8000"
+  caddy:
+    profiles: ["standalone-caddy"]

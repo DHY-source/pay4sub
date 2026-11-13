@@ -1,0 +1,4 @@
+name: lightcard-order-notify
+description: 将小店持久化的新订单提醒发送给配对店主，不调用模型
+events:
+  - gateway:startup
